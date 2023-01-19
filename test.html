@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="JQuery.js"></script>
+</head>
+<body>
+<script>
+    var times=0;
+    function a3() {
+        function isHidden(el) {
+            var style = window.getComputedStyle(el);
+            return ((style.display === 'none') || (style.visibility === 'hidden'))
+        }
+
+        // get the body tag
+        var body = document.querySelector('body');
+
+        // get all tags inside body
+        var allTags = body.getElementsByTagName('*');
+
+
+
+        var ids = [];
+        var index=0;
+        for (var i = 0, max = allTags.length; i < max; i++) {
+            if (!isHidden(allTags[i])) {
+                if (allTags[i].innerText != "") {
+                    ids[index++]=allTags[i].innerText;
+                }
+
+
+            }
+
+        }
+
+        if(times%2==0){
+            times++;
+
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: 'http://127.0.0.1:8000/dummypath',
+                data: JSON.stringify(ids),
+                contentType:"application/json",
+                success: function (result){
+                    var set = new Set();
+
+                    for(var i=0;i<result.length;i++){
+
+                        set.add(result[i]);
+                    }
+
+                    for (var i = 0; i < max; i++) {
+
+                        if (!isHidden(allTags[i])) {
+
+                            if (allTags[i].innerHTML != "") {
+
+                                var innerHTML=allTags[i].innerHTML;
+                                set.forEach(function (element, index, array) {
+
+                                    var cnt = innerHTML.indexOf(element);
+                                    var cnt1 = innerHTML.indexOf("highlight");
+                                    console.log(cnt1);
+                                    if (cnt >=0 && cnt1<0) {
+                                        console.log(cnt);
+                                        innerHTML = innerHTML.substring(0, cnt) + "<span style='background-color: yellow' class='highlight'>" + innerHTML.substring(cnt, cnt + element.length) + "</span>" + innerHTML.substring(cnt + element.length);
+                                        allTags[i].innerHTML= innerHTML;
+                                        i++;
+                                    }
+                                });
+                            }
+
+
+                        }
+                    }
+
+
+
+                },
+                error: function(data){
+                    console.log("error");
+                }
+
+            });
+        }else{
+            times++;
+            const elements = document.getElementsByClassName("highlight");
+            for(var i=0;i<elements.length;i++){
+                Object.assign(elements[i].style,{
+                    backgroundColor: 'transparent',
+                })
+            }
+
+
+            // $.ajax({
+            //     type: 'post',
+            //     dataType: 'json',
+            //     url: 'http://127.0.0.1:8000/dummypath',
+            //     data: JSON.stringify(ids),
+            //     contentType:"application/json",
+            //     success: function (result){
+            //         var set = new Set();
+            //
+            //         for(var i=0;i<result.length;i++){
+            //
+            //             set.add(result[i]);
+            //         }
+            //
+            //         for (var i = 0; i < max; i++) {
+            //
+            //             if (!isHidden(allTags[i])) {
+            //
+            //                 if (allTags[i].innerHTML != "") {
+            //
+            //                     var innerHTML=allTags[i].innerHTML;
+            //                     set.forEach(function (element, index, array) {
+            //
+            //                         var cnt = innerHTML.indexOf(element);
+            //
+            //                         if (cnt >=0) {
+            //
+            //                             innerHTML = innerHTML.substring(0, cnt) + "<span style='background-color: transparent' class='highlight'>" + innerHTML.substring(cnt, cnt + element.length) + "</span>" + innerHTML.substring(cnt + element.length);
+            //                             allTags[i].innerHTML= innerHTML;
+            //                             i++;
+            //                         }
+            //                     });
+            //                 }
+            //
+            //
+            //             }
+            //         }
+            //
+            //
+            //     },
+            //     error: function(data){
+            //         console.log("error");
+            //     }
+            //
+            // });
+            //
+        }
+        console.log(allTags)
+
+
+        ids.length=0;
+    }
+
+
+
+</script>
+
+<p>ths is p<a href="">this is a</a></p>
+<i>this is i</i>
+<i>beijing</i>
+username :<input type="text" id="txtName" onblur="a1()"/>
+tom: <button type="button" onclick="a3()">Click Me!</button>
+adams:<input type="text" id="adams"/>
+</body>
+</html>
